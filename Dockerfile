@@ -1,4 +1,4 @@
-FROM tiangolo/uwsgi-nginx-flask:python3.8
+FROM tiangolo/uwsgi-nginx-flask:python3.8 
 
 
 COPY ./app /app
@@ -16,4 +16,5 @@ ARG CACHEBUST=1
 RUN ls -tdr Pisces/binaries/* | head -1 > file_loc
 RUN cp  $(cat file_loc)/* .
 RUN ls
-RUN ls *.gz | xargs -n1 tar -xzf 
+RUN ls *.gz | xargs -n1 tar -xzf
+

@@ -22,6 +22,7 @@ def download_file(name):
 @app.route('/',methods=['GET','POST'])
 def main_upload():
     if request.method == 'POST':
+        print("POST rcvd")
         if 'file' not in request.files:
             flash('no file part')
             return redirect(request.url)
