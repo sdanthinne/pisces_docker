@@ -1,48 +1,51 @@
-from flask import Flask,flash,request,redirect,url_for,send_from_directory
+import os
+from flask import Flask, flash, request, redirect, render_template
 from werkzeug.utils import secure_filename
 
-import os
+app=Flask(__name__)
 
-app = Flask(__name__)
+app.secret_key = "secret key"
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
+# Get current path
+path = os.getcwd()
+# file Upload
+UPLOAD_FOLDER = os.path.join(path, 'uploads')
+
+# Make directory if uploads is not exists
+if not os.path.isdir(UPLOAD_FOLDER):
+    os.mkdir(UPLOAD_FOLDER)
+
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+    # Allowed extension you can set your own
+    ALLOWED_EXTENSIONS = set(['fa', 'bai', 'bam'])
 
 
-##envs
-UPLOAD_FOLDER="/temp/"
-ALLOWED_EXTENSIONS={'.bam','.bai','.fa'}
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-##
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def allowed_filename(fname):
-    return '.' in fname and filename.rsplit('.',1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/uploads/<name>')
-def download_file(name):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], name)
-
-@app.route('/',methods=['GET','POST'])
-def main_upload():
+@app.route('/')
+def upload_form():
+    return render_template('upload.html')
+@app.route('/', methods=['POST'])
+def upload_file():
     if request.method == 'POST':
-        print("POST rcvd")
-        if 'file' not in request.files:
-            flash('no file part')
+        if 'files[]' not in request.files:
+            flash('No file part')
             return redirect(request.url)
-        files = request.files['file']
-        filename = ''
-        for f in files:
-            if f.filename == '':
-                flash("No selected file")
-                return redirect(request.url)
-            if f and allowed_filename(f.filename):
-                filename = secure_filename(f.filename)
-                f.save(os.path.join(app.config['UPLOAD_FOLDER'],f))
-        return redirect(url_for('download file', name=filename))
-    return '<!doctype html><h1>Welcome to Pisces Online.</h1>\
-        <form method=post enctype=multipart/form-data>\
-        <input type="file" name="file" multiple="multiple">\
-        <input type="submit" value="Upload"\
-        </form>\
-        '
+        files = request.files.getlist('files[]')
+        f_names = []
+        for file in files:
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                f_names.append(filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        flash(f'Successfully uploaded files: {f_names}')
+        if len(f_names) == 3:
+            flash("processing")
+        else:
+            flash("Incorrect number of files, cannot process.\n")
+        return redirect('/')
 
-@app.route('/process')
-def process():
-    return 'processing... <a href="output.vcf">download here</a>'
