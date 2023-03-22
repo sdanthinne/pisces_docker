@@ -1,0 +1,60 @@
+
+<!doctype html>
+{% extends "base.html" %}
+{% block content %}
+<style>
+div#loading {
+  width: 100px;
+  height: 100px;
+  background-color: #0CB1C4;
+  animation-name: spin;
+  animation-duration: 5000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear; 
+  cursor: wait;
+  display: none;
+}
+
+@keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}
+
+</style>
+<script type="text/javascript">// <![CDATA[
+        function loading(){
+            $("#loading").show();
+            $("#content").hide();       
+        }
+// ]]></script>
+<h2>Select file(s) to upload and process using default command</h2>
+<p>
+	{% with messages = get_flashed_messages() %}
+	  {% if messages %}
+		<ul class=flashes>
+		{% for message in messages %}
+		  <li>{{ message }}</li>
+		{% endfor %}
+		</ul>
+	  {% endif %}
+	{% endwith %}
+</p>
+<div>
+Default pre-command: CreateGenomeSizeFile.dll -s "Species name and build" -g refs/ -out refs/
+<br/>
+Default command: Pisces.dll -Bam &lt;uploaded bam file&gt; -G refs/ -OutFolder output/ -CallMNVs false -gVCF false -RMxNFilter 5,9,0.35 -MinimumFrequency 0.01 -threadbychr true
+</div>
+<div id="loading">uploading file</div>
+<div id="content">
+<form method="post" action="/" enctype="multipart/form-data">
+	{{ form.hidden_tag() }}
+	{{ form.jobname.label }} {{ form.jobname }}
+	{{ form.files.label }} {{ form.files }}
+	{{ form.submit }}
+</form>
+</div>
+{% endblock %}

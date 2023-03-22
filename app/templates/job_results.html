@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Job results: {{ jobname }}</h2>
+{% if not done %} 
+    <script>
+    setTimeout(function(){
+   window.location.reload();
+   }, 5000);
+   </script>
+{% endif %}
+<p>
+	{% with messages = get_flashed_messages() %}
+	  {% if messages %}
+		<ul class=flashes>
+		{% for message in messages %}
+		  <li>{{ message }}</li>
+		{% endfor %}
+		</ul>
+	  {% endif %}
+	{% endwith %}
+</p>
+<div>
+    {% if done %}
+	<p>{{ output_message|safe }}</p>
+	<a href=/download/{{jobname}}/{{jobname}}.vcf>Download here</a>
+    {% else %}
+    <p>Loading... please wait\<p>
+    {% endif %}
+</div>
+{% endblock %}
