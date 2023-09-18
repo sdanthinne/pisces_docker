@@ -14,6 +14,7 @@ RUN pip install eventlet shelljob flask_wtf Flask-BasicAuth
 ARG CACHEBUST=1
 COPY ./app /app
 ARG VERSION=5.2.11.163
+ENV NGINX_MAX_UPLOAD 50m
 RUN tar -xzf Pisces/binaries/$VERSION/Pisces_$VERSION.tar.gz
 RUN tar -xzf Pisces/binaries/$VERSION/CreateGenomeSizeFile_$VERSION.tar.gz
 
