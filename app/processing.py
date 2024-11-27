@@ -13,8 +13,8 @@ CMD_PISCES=" ".join([DOTNET, CMD_PISCES_BASE, "-Bam {FILE_DIR}/{jobname}.bam -G 
 
 def process_files(jobname):
     FILE_DIR=f"tmp/{jobname}"
-    genome_size_cmd = CMD_CREATEGENOMESIZEFILE.format(kwargs={"FILE_DIR":FILE_DIR})
-    pisces_cmd = CMD_PISCES.format(kwargs={"FILE_DIR":FILE_DIR,"jobname":jobname})
+    genome_size_cmd = CMD_CREATEGENOMESIZEFILE.format(**locals())
+    pisces_cmd = CMD_PISCES.format(**locals())
     with open(f"{FILE_DIR}/commands_used.txt","w+") as f:
         f.writelines([genome_size_cmd, f"\n{pisces_cmd}"])
         f.close()
