@@ -12,7 +12,9 @@ import subprocess
 from threading import Thread
 
 from utils import has_files
-from processing import PiscesThread
+from processing import PiscesThread, generate_form
+
+form = None # global form object
 
 def create_app():
     app = Flask(__name__)
@@ -65,4 +67,5 @@ def contact():
     return render_template("start.html",form=form)
 
 if __name__=="__main__":
+    form = generate_form()
     app.run(debug=True)
