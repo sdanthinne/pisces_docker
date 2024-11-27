@@ -1,6 +1,7 @@
 from threading import Thread
 import subprocess
 import re
+import logging
 
 DOTNET = "dotnet"
 
@@ -31,7 +32,9 @@ class PiscesThread(Thread):
         self.done = False
 
     def run(self):
+        logging.info(f"Starting processing for {self.jobname}")
         self.output = process_files(self.jobname)
+        logging.info(f"Finished processing for {self.jobname}")
         self.done = True
         path = f"tmp/{self.jobname}"
         with open(f"{path}/done", "w+") as df:

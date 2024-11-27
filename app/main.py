@@ -36,6 +36,7 @@ class PiscesForm(FlaskForm):
 
 @app.route("/download/<path:path>")
 def send_results(path):
+    app.logger.info(f"Sending from path {path}")
     return send_from_directory('tmp',path)
 
 @app.route("/s/<path:path>")
@@ -47,6 +48,7 @@ def display_results(jobname):
     try:
         open(f"tmp/{jobname}/done")
     except FileNotFoundError:
+        app.logger.info(f"File not found, must not be done with processing")
         return render_template("job_results.html",output_message="",jobname=jobname,done=False)
 
     commands = open(f'tmp/{jobname}/commands_used.txt').readlines()
@@ -60,10 +62,11 @@ def contact():
     form = PiscesForm()
     if form.validate_on_submit():
         jobname = form.jobname.data
+        app.logger.info(f"Form is valid, dispatching processing for name \"{jobname}\"")
         t = PiscesThread(jobname=jobname)
         t.start()
         return redirect(url_for(f"display_results",jobname=jobname))
-
+    app.logger.info(f"Form is invalid, redirect to home")
     return render_template("start.html",form=form)
 
 if __name__=="__main__":
