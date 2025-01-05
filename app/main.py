@@ -39,6 +39,7 @@ class PiscesForm(FlaskForm):
     submit = SubmitField("Submit Job",render_kw={"onclick":"loading();"})
 
 @app.route("/download/<path:path>")
+@basic_auth.required
 def send_results(path):
     app.logger.info(f"Sending from path {path}")
     return send_from_directory('tmp',path)
@@ -48,6 +49,7 @@ def send_static(path):
     return send_from_directory('static',path)
 
 @app.route("/tmp/<string:jobname>")
+@basic_auth.required
 def display_results(jobname):
     try:
         open(f"tmp/{jobname}/done")
@@ -60,7 +62,7 @@ def display_results(jobname):
     output_message=f"Processing completed, please click link below to download. These results will be saved for 1 day online at this URL. The commands used were:\n <br/> {commands}"
     return render_template("job_results.html",output_message=output_message,jobname=jobname,done=True)
 
-@app.route("/",methods=['GET','POST'])
+@app.route("/start/",methods=['GET','POST'])
 @basic_auth.required
 def contact():
     form = PiscesForm()
@@ -72,6 +74,10 @@ def contact():
         return redirect(url_for(f"display_results",jobname=jobname))
     app.logger.info(f"Form is invalid, redirect to home")
     return render_template("start.html",form=form)
+
+@app.route("/")
+def home():
+    return render_template("home.html")
 
 if __name__=="__main__":
     form = generate_form()
