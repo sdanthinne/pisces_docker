@@ -1,0 +1,4 @@
+SECRET_KEY: 'blah blah'
+BASIC_AUTH_USERNAME: 'first user'
+BASIC_AUTH_PASSWORD: 'first password'
+AUTH_KEY: 'cookie_key'
