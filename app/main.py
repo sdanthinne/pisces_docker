@@ -1,3 +1,4 @@
+import os, yaml
 
 from flask import Flask,render_template, send_from_directory, url_for, redirect, session
 from flask_wtf import FlaskForm
@@ -16,14 +17,17 @@ from processing import PiscesThread, generate_form
 
 form = None # global form object
 
+
 def create_app():
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = 'this is the way the world started. In chaos'
-    app.config["BASIC_AUTH_USERNAME"] = 'od260'
-    app.config["BASIC_AUTH_PASSWORD"] = 'od260ONLY'
+    with open("config.yaml", "r") as cfg_file:
+        config = yaml.safe_load(cfg_file)
 
-    AUTH_HASH='pbkdf2:sha256:260000$AAwUgjbKNucc80Sj$6e15d7de7a0010800f87bfd208b62ae0182b8d9c8a02b76c1b6720fd7a38ff00'
-    app.secret_key = AUTH_HASH
+        app.config["SECRET_KEY"] = config["SECRET_KEY"]
+        app.config["BASIC_AUTH_USERNAME"] = config["BASIC_AUTH_USERNAME"]
+        app.config["BASIC_AUTH_PASSWORD"] = config["BASIC_AUTH_PASSWORD"]
+        app.secret_key = config['AUTH_KEY']
+
     return app
 
 app = create_app()
